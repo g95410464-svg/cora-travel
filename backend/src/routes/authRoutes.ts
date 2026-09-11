@@ -1,5 +1,6 @@
 import { createHmac, randomBytes } from 'node:crypto';
 import { Router } from 'express';
+import type { Response } from 'express';
 import type { GoogleAuthConfig } from '../config/googleAuth.js';
 
 type GoogleUser = {
@@ -67,7 +68,7 @@ export function authRoutes(
     }
   };
 
-  const mobileRedirect = (res: Parameters<Parameters<typeof router.get>[1]>[1], params: Record<string, string>) => {
+  const mobileRedirect = (res: Response, params: Record<string, string>) => {
     const uri = new URL(config.MOBILE_AUTH_REDIRECT_URI);
     for (const [key, value] of Object.entries(params)) uri.searchParams.set(key, value);
     return res.redirect(uri.toString());
