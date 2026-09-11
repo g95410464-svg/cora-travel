@@ -1,8 +1,8 @@
-# CORA · Asistente turístico inteligente para El Salvador
+# CORA · Mi asistente de viaje para El Salvador
 
 <p align="center">
-  <strong>Tu viaje empieza con una conversación.</strong><br>
-  Recomendaciones locales, planificación y herramientas de viaje en una sola app móvil.
+  <strong>Conoce El Salvador a tu manera.</strong><br>
+  Una app móvil que convierte cada viaje en una experiencia personal.
 </p>
 
 <p align="center">
@@ -12,15 +12,15 @@
   <img alt="AI providers" src="https://img.shields.io/badge/AI-OpenRouter%20%7C%20NVIDIA%20NIM-76B900">
 </p>
 
-## Qué es CORA
+## Sobre CORA
 
-CORA es una aplicación móvil de turismo con inteligencia artificial creada para ayudar a descubrir y disfrutar El Salvador. La persona responde unas preguntas al entrar, obtiene un perfil inicial y luego puede conversar con CORA para encontrar actividades, playas, surf, gastronomía, cultura y naturaleza que encajen con su presupuesto y estilo.
+CORA es mi propuesta para hacer más fácil y cercano el turismo en El Salvador. La aplicación conoce los gustos de cada viajero y ayuda a encontrar actividades, playas, surf, gastronomía, cultura y naturaleza que encajen con su presupuesto y su forma de viajar.
 
-La experiencia está pensada para viajeros reales: incluye un asistente con tono cercano, un Market de experiencias turísticas y un conversor de divisas. El backend mantiene aisladas las credenciales de IA y permite cambiar de proveedor sin modificar la aplicación móvil.
+Al entrar, CORA hace unas preguntas sencillas para entender a la persona. Después ofrece una conversación natural, un catálogo de experiencias locales y un conversor de divisas. Mi objetivo es que alguien que visita el país pueda decidir qué hacer sin perder tiempo buscando en muchas aplicaciones diferentes.
 
-El proyecto y la marca CORA son propiedad de **g95410464-svg**. Todos los derechos sobre el código, diseño y contenidos originales quedan reservados, salvo las dependencias de terceros indicadas por sus respectivas licencias.
+La idea, el nombre, el diseño y el código original de CORA son míos. El proyecto pertenece a **g95410464-svg** y está siendo desarrollado para un hackathon con la intención de convertirlo en un producto turístico real.
 
-## Funciones actuales
+## Qué puede hacer hoy
 
 - Onboarding con nombre, país, idioma, presupuesto e intereses.
 - Perfil de viajero guardado localmente y editable.
@@ -30,7 +30,7 @@ El proyecto y la marca CORA son propiedad de **g95410464-svg**. Todos los derech
 - Proveedores de IA intercambiables: OpenRouter y NVIDIA NIM.
 - Límites de solicitudes, validación de entrada, timeout y errores seguros.
 
-El roadmap contempla itinerarios estructurados, traductor cultural de modismos salvadoreños, recomendaciones patrocinadas relevantes, autenticación e historial opcional.
+Lo siguiente que quiero incorporar es la creación de itinerarios, un traductor cultural para expresiones salvadoreñas, recomendaciones patrocinadas relevantes y cuentas para guardar los viajes.
 
 ## Arquitectura
 
@@ -156,9 +156,8 @@ scripts/    Atajos reproducibles para Flutter y APK
 | `AI_TIMEOUT_MS` | Timeout de llamadas de IA |
 | `RATE_LIMIT_MAX` | Solicitudes por IP y minuto |
 
-## Propiedad y contacto
+## Autor
 
-© 2026 **g95410464-svg · CORA**. Proyecto privado de hackathon y producto en desarrollo. Para colaboraciones o licencias, contacta al propietario del repositorio: [github.com/g95410464-svg](https://github.com/g95410464-svg).
+© 2026 **g95410464-svg · CORA**. CORA es un proyecto personal de **g95410464-svg**. El código, la identidad visual y los contenidos originales son de mi propiedad. Para hablar sobre el proyecto o colaborar, puedes encontrarme en [github.com/g95410464-svg](https://github.com/g95410464-svg).
 
 Las marcas Flutter, Node.js, OpenRouter, NVIDIA y las demás referencias pertenecen a sus respectivos propietarios.
-
