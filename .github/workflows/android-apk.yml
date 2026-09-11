@@ -93,7 +93,7 @@ jobs:
           fi
 
           if [ "$ACTUAL_SHA1" != "$EXPECTED_SHA1" ]; then
-            echo "::error::APK signing SHA-1 does not match Firebase Google OAuth configuration"
+            echo "::error::APK signing SHA-1 $ACTUAL_SHA1 does not match Firebase OAuth SHA-1 $EXPECTED_SHA1"
             exit 1
           fi
 
