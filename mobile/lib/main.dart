@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'models/traveler_profile.dart';
 import 'repositories/profile_repository.dart';
 import 'features/onboarding/onboarding_screen.dart';
@@ -8,10 +7,12 @@ import 'features/assistant/assistant_screen.dart';
 import 'features/market/market_screen.dart';
 import 'features/currency/currency_screen.dart';
 import 'features/auth/auth_screen.dart';
+import 'services/auth_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await AuthService().initialize();
   runApp(const CoraApp());
 }
 
@@ -51,6 +52,7 @@ class ProfileGate extends StatefulWidget {
 
 class _ProfileGateState extends State<ProfileGate> {
   final _repository = ProfileRepository();
+  final _auth = AuthService();
   TravelerProfile? _profile;
   bool _loading = true;
   String? _error;
@@ -83,16 +85,16 @@ class _ProfileGateState extends State<ProfileGate> {
   }
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        initialData: FirebaseAuth.instance.currentUser,
+  Widget build(BuildContext context) => StreamBuilder<bool>(
+        stream: _auth.authStateChanges,
+        initialData: _auth.isSignedIn,
         builder: (context, authSnapshot) {
           if (authSnapshot.connectionState == ConnectionState.waiting &&
-              authSnapshot.data == null) {
+              authSnapshot.data != true) {
             return const Scaffold(
                 body: Center(child: CircularProgressIndicator()));
           }
-          if (authSnapshot.data == null) return const AuthScreen();
+          if (authSnapshot.data != true) return const AuthScreen();
           if (_loading) {
             return const Scaffold(
                 body: Center(child: CircularProgressIndicator()));
