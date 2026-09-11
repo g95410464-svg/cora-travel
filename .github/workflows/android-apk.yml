@@ -43,6 +43,60 @@ jobs:
           path: ~/.android/debug.keystore
           key: cora-android-debug-keystore-v1
 
+      - name: Ensure Android debug signing key exists
+        run: |
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            mkdir -p "$HOME/.android"
+            keytool -genkeypair \
+              -keystore "$HOME/.android/debug.keystore" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+      - name: Verify Google OAuth signing SHA-1
+        run: |
+          ACTUAL_SHA1="$(keytool -list -v \
+            -keystore "$HOME/.android/debug.keystore" \
+            -alias androiddebugkey \
+            -storepass android \
+            -keypass android 2>/dev/null \
+            | sed -n 's/^[[:space:]]*SHA1:[[:space:]]*//p' \
+            | head -n 1 \
+            | tr -d ':' \
+            | tr '[:upper:]' '[:lower:]')"
+
+          EXPECTED_SHA1="$(python3 - <<'PY'
+          import json
+          with open('android/app/google-services.json', encoding='utf-8') as f:
+              data = json.load(f)
+          hashes = []
+          for client in data.get('client', []):
+              for oauth in client.get('oauth_client', []):
+                  info = oauth.get('android_info') or {}
+                  if info.get('package_name') == 'sv.cora.cora' and info.get('certificate_hash'):
+                      hashes.append(info['certificate_hash'].replace(':', '').lower())
+          print(hashes[0] if hashes else '')
+          PY
+          )"
+
+          echo "APK signing SHA-1: $ACTUAL_SHA1"
+          echo "Firebase OAuth SHA-1: $EXPECTED_SHA1"
+
+          if [ -z "$EXPECTED_SHA1" ]; then
+            echo "::error::google-services.json has no Android OAuth certificate hash for sv.cora.cora"
+            exit 1
+          fi
+
+          if [ "$ACTUAL_SHA1" != "$EXPECTED_SHA1" ]; then
+            echo "::error::APK signing SHA-1 does not match Firebase Google OAuth configuration"
+            exit 1
+          fi
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
