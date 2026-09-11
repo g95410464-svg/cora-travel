@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "749497163656",
+    "project_id": "cora-155af",
+    "storage_bucket": "cora-155af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749497163656:android:78a96e5592fa0d7569643d",
+        "android_client_info": {
+          "package_name": "sv.cora.cora"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj92yuBUgGtnRJlRSAq7X4kzqkrky1wtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

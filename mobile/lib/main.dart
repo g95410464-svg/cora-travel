@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'models/traveler_profile.dart';
 import 'repositories/profile_repository.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/assistant/assistant_screen.dart';
 import 'features/market/market_screen.dart';
 import 'features/currency/currency_screen.dart';
+import 'features/auth/auth_screen.dart';
 
-void main() => runApp(const CoraApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const CoraApp());
+}
 
 class CoraApp extends StatelessWidget {
   const CoraApp({super.key});
@@ -87,6 +94,9 @@ class _ProfileGateState extends State<ProfileGate> {
         Text(_error!),
         TextButton(onPressed: _load, child: const Text('Reintentar'))
       ])));
+    }
+    if (FirebaseAuth.instance.currentUser == null) {
+      return AuthScreen(onAuthenticated: _load);
     }
     if (_profile == null) return OnboardingScreen(onComplete: _save);
     return TravelHome(

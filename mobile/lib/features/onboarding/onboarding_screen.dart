@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/traveler_profile.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -81,8 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     });
     try {
       await widget.onComplete(TravelerProfile(
-          id: widget.initial?.id ??
-              'guest_${DateTime.now().microsecondsSinceEpoch}',
+          id: widget.initial?.id ?? FirebaseAuth.instance.currentUser!.uid,
           name: _name.text.trim(),
           country: _country.text.trim(),
           language: _language,
