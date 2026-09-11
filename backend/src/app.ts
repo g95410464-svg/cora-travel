@@ -22,6 +22,13 @@ export function createApp(config: Config, ai: AIService = createAIService(config
     if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
     next();
   });
+  app.get('/', (_req, res) => res.json({
+    name: 'CORA API',
+    status: 'online',
+    message: 'Backend de CORA activo.',
+    health: '/health',
+    endpoints: ['/api/chat', '/api/currency/convert'],
+  }));
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api', rateLimit({
     windowMs: 60000, limit: config.RATE_LIMIT_MAX,
