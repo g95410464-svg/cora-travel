@@ -37,6 +37,12 @@ jobs:
           java-version: '17'
           cache: gradle
 
+      - name: Restore Android debug signing key
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: cora-android-debug-keystore-v1
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
