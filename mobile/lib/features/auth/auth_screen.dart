@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../services/auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -14,12 +15,22 @@ class _AuthScreenState extends State<AuthScreen> {
   final _phone = TextEditingController();
   final _code = TextEditingController();
   final _auth = AuthService();
+  StreamSubscription<String>? _authErrorSub;
   String? _verificationId;
   String? _error;
   bool _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    _authErrorSub = _auth.authErrors.listen((message) {
+      if (mounted) setState(() => _error = message);
+    });
+  }
+
+  @override
   void dispose() {
+    _authErrorSub?.cancel();
     _phone.dispose();
     _code.dispose();
     super.dispose();
@@ -33,13 +44,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       await _auth.signInWithGoogle();
-    } on FirebaseAuthException catch (e) {
-      if (mounted) setState(() => _error = _message(e));
-    } on PlatformException catch (e) {
-      if (mounted) setState(() => _error = _googleMessage(e));
+    } on AuthServiceException catch (e) {
+      if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'No se pudo iniciar sesión con Google. Intenta de nuevo.');
+        setState(() => _error = 'No se pudo abrir Google. Intenta de nuevo.');
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -119,15 +128,6 @@ class _AuthScreenState extends State<AuthScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
-  }
-
-  String _googleMessage(PlatformException e) {
-    final code = e.code.toLowerCase();
-    if (code.contains('cancel')) return 'Inicio de sesión cancelado.';
-    if (code.contains('network')) {
-      return 'No hay conexión para iniciar sesión con Google.';
-    }
-    return 'No se pudo iniciar sesión con Google. Intenta de nuevo.';
   }
 
   String _message(FirebaseAuthException e) => switch (e.code) {
@@ -218,7 +218,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           .error))),
                         const SizedBox(height: 22),
                         const Text(
-                            'Al continuar aceptas que Firebase use tu número para enviar el código de acceso.',
+                            'El acceso con Google se completa de forma segura en el navegador. El SMS sigue usando Firebase.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 12, color: Color(0xFF53665F))),
