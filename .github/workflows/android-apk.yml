@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: cora-android-${{ github.ref }}
@@ -93,12 +93,6 @@ jobs:
           fi
 
           if [ "$ACTUAL_SHA1" != "$EXPECTED_SHA1" ]; then
-            printf '%s\n' "$ACTUAL_SHA1" > ../android-signing-sha1.txt
-            git -C .. config user.name "github-actions[bot]"
-            git -C .. config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git -C .. add android-signing-sha1.txt
-            git -C .. commit -m "ci: record Android signing SHA-1" || true
-            git -C .. push
             echo "::error::APK signing SHA-1 $ACTUAL_SHA1 does not match Firebase OAuth SHA-1 $EXPECTED_SHA1"
             exit 1
           fi
