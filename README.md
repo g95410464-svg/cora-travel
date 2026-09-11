@@ -12,6 +12,14 @@
   <img alt="AI providers" src="https://img.shields.io/badge/AI-OpenRouter%20%7C%20NVIDIA%20NIM-76B900">
 </p>
 
+<p align="center">
+  <a href="https://github.com/g95410464-svg/cora-travel/raw/refs/heads/main/mobile/build/app/outputs/flutter-apk/CORA_Travel.apk">
+    <img alt="Descargar APK" src="https://img.shields.io/badge/Descargar%20CORA%20APK-4CAF50?style=for-the-badge&logo=android&logoColor=white">
+  </a>
+</p>
+
+> **Prueba CORA en Android:** [descarga el APK aquí](https://github.com/g95410464-svg/cora-travel/raw/refs/heads/main/mobile/build/app/outputs/flutter-apk/CORA_Travel.apk). Activa la instalación desde fuentes desconocidas cuando Android lo solicite.
+
 ## Sobre CORA
 
 CORA es mi propuesta moderna para hacer más fácil y cercano el turismo en El Salvador. La aplicación conoce los gustos de cada viajero y ayuda a encontrar actividades, playas, surf, gastronomía, cultura y naturaleza que encajen con su presupuesto y su forma de viajar.
