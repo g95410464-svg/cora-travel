@@ -14,7 +14,7 @@
 
 ## Sobre CORA
 
-CORA es mi propuesta para hacer más fácil y cercano el turismo en El Salvador. La aplicación conoce los gustos de cada viajero y ayuda a encontrar actividades, playas, surf, gastronomía, cultura y naturaleza que encajen con su presupuesto y su forma de viajar.
+CORA es mi propuesta moderna para hacer más fácil y cercano el turismo en El Salvador. La aplicación conoce los gustos de cada viajero y ayuda a encontrar actividades, playas, surf, gastronomía, cultura y naturaleza que encajen con su presupuesto y su forma de viajar.
 
 Al entrar, CORA hace unas preguntas sencillas para entender a la persona. Después ofrece una conversación natural, un catálogo de experiencias locales y un conversor de divisas. Mi objetivo es que alguien que visita el país pueda decidir qué hacer sin perder tiempo buscando en muchas aplicaciones diferentes.
 
@@ -158,6 +158,6 @@ scripts/    Atajos reproducibles para Flutter y APK
 
 ## Autor
 
-© 2026 **g95410464-svg · CORA**. CORA es un proyecto personal de **g95410464-svg**. El código, la identidad visual y los contenidos originales son de mi propiedad. Para hablar sobre el proyecto o colaborar, puedes encontrarme en [github.com/g95410464-svg](https://github.com/g95410464-svg).
+© 2026 **g95410464-svg · CORA**. CORA es un proyecto personal de **Guillermo Castillo**. El código, la identidad visual y los contenidos originales son de mi propiedad. Para hablar sobre el proyecto o colaborar, puedes encontrarme en github.com/g95410464-svg(https://github.com/g95410464-svg).
 
 Las marcas Flutter, Node.js, OpenRouter, NVIDIA y las demás referencias pertenecen a sus respectivos propietarios.
