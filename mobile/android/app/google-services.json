@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "749497163656-juehdkk11i931ing3cga6i78f9i97kem.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sv.cora.cora",
+            "certificate_hash": "e992434a0ef437076ce707202fdeb670b74c42cb"
+          }
+        },
+        {
           "client_id": "749497163656-rcm7bebeslbiglugkhmqv7fdjka0qmlg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
