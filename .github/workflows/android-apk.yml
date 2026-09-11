@@ -58,7 +58,7 @@ jobs:
               -dname "CN=Android Debug,O=Android,C=US"
           fi
 
-      - name: Check Google OAuth signing SHA-1
+      - name: Check Firebase SMS signing SHA-1
         run: |
           ACTUAL_SHA1="$(keytool -list -v \
             -keystore "$HOME/.android/debug.keystore" \
@@ -85,15 +85,15 @@ jobs:
           )"
 
           echo "APK signing SHA-1: $ACTUAL_SHA1"
-          echo "Firebase OAuth SHA-1 values: $EXPECTED_SHA1S"
+          echo "Firebase SHA-1 values: $EXPECTED_SHA1S"
           echo "SIGNING_SHA1=$ACTUAL_SHA1" >> "$GITHUB_ENV"
 
           if [ -z "$EXPECTED_SHA1S" ]; then
-            echo "::warning::google-services.json has no Android OAuth certificate hash for sv.cora.cora"
+            echo "::warning::google-services.json has no Android certificate hash for sv.cora.cora; SMS auth may fail."
           elif [[ " $EXPECTED_SHA1S " == *" $ACTUAL_SHA1 "* ]]; then
-            echo "Google OAuth signing fingerprint is registered in Firebase."
+            echo "Firebase signing fingerprint is registered."
           else
-            echo "::warning::APK signing SHA-1 $ACTUAL_SHA1 is not present in google-services.json"
+            echo "::warning::APK signing SHA-1 $ACTUAL_SHA1 is not present in google-services.json; Google browser OAuth is unaffected, but Firebase SMS may fail."
           fi
 
       - name: Set up Flutter
@@ -112,7 +112,10 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build release APK
-        run: flutter build apk --release --build-number=1000${{ github.run_number }}
+        run: >-
+          flutter build apk --release
+          --build-number=1000${{ github.run_number }}
+          --dart-define=API_BASE_URL=https://cora-api-production-bd76.up.railway.app
 
       - name: Prepare APK
         run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/CORA-Travel.apk
