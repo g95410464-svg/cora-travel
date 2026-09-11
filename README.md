@@ -1,103 +1,164 @@
-# CORA · Fase 1
+# CORA · Asistente turístico inteligente para El Salvador
 
-Flutter (Material 3) → Express/TypeScript → AIService → AIProvider → OpenRouter o NVIDIA NIM.
+<p align="center">
+  <strong>Tu viaje empieza con una conversación.</strong><br>
+  Recomendaciones locales, planificación y herramientas de viaje en una sola app móvil.
+</p>
 
-CORA es una app móvil. La ejecución web es una vista previa de desarrollo del mismo código Flutter. La configuración local actual usa NVIDIA NIM con `AI_PROVIDER=nvidia` y `AI_MODEL=deepseek-ai/deepseek-v4-pro-0813`; la clave permanece exclusivamente en `backend/.env`. `.env.example` conserva valores vacíos para no distribuir credenciales.
+<p align="center">
+  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white">
+  <img alt="Node.js" src="https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white">
+  <img alt="AI providers" src="https://img.shields.io/badge/AI-OpenRouter%20%7C%20NVIDIA%20NIM-76B900">
+</p>
 
-La app inicia con una bienvenida de cinco preguntas: nombre, país, idioma de conversación, presupuesto diario en USD e intereses. El perfil se guarda localmente, puede editarse o borrarse y se envía como contexto al chat. Al regresar se muestra «Mi viaje», con acceso a CORA, Market y Divisas. La interfaz sigue en español; el idioma elegido se usa en las respuestas de IA.
+## Qué es CORA
 
-Market contiene seis experiencias de demostración con búsqueda, categorías, detalles y acceso a CORA para planear algo similar. Los precios son ilustrativos; no procesa pagos, contactos ni reservas reales.
+CORA es una aplicación móvil de turismo con inteligencia artificial creada para ayudar a descubrir y disfrutar El Salvador. La persona responde unas preguntas al entrar, obtiene un perfil inicial y luego puede conversar con CORA para encontrar actividades, playas, surf, gastronomía, cultura y naturaleza que encajen con su presupuesto y estilo.
 
-Divisas convierte USD, GTQ, EUR, MXN, HNL, CRC, CAD y GBP mediante `POST /api/currency/convert` (`amount`, `from`, `to`). El backend consulta ExchangeRate-API, mantiene una caché de una hora, muestra la fecha de la tasa y devuelve un error seguro si no obtiene datos válidos. Las tasas se actualizan diariamente y no incluyen comisiones. [Fuente y documentación](https://www.exchangerate-api.com/docs/free).
+La experiencia está pensada para viajeros reales: incluye un asistente con tono cercano, un Market de experiencias turísticas y un conversor de divisas. El backend mantiene aisladas las credenciales de IA y permite cambiar de proveedor sin modificar la aplicación móvil.
 
-Sin base de datos de servidor, autenticación, historial de conversación persistente, itinerarios ni traductor todavía. `userId` es un identificador local, no una credencial. No se registran mensajes.
+El proyecto y la marca CORA son propiedad de **g95410464-svg**. Todos los derechos sobre el código, diseño y contenidos originales quedan reservados, salvo las dependencias de terceros indicadas por sus respectivas licencias.
 
-## Backend
+## Funciones actuales
 
-Requiere Node.js 22 o posterior. Desde la raíz, en PowerShell:
+- Onboarding con nombre, país, idioma, presupuesto e intereses.
+- Perfil de viajero guardado localmente y editable.
+- Asistente CORA conectado al backend mediante `POST /api/chat`.
+- Market con experiencias salvadoreñas, búsqueda y categorías.
+- Conversor de divisas mediante `POST /api/currency/convert`.
+- Proveedores de IA intercambiables: OpenRouter y NVIDIA NIM.
+- Límites de solicitudes, validación de entrada, timeout y errores seguros.
+
+El roadmap contempla itinerarios estructurados, traductor cultural de modismos salvadoreños, recomendaciones patrocinadas relevantes, autenticación e historial opcional.
+
+## Arquitectura
+
+```text
+Flutter / Android / iOS
+          │ HTTPS
+          ▼
+Express + TypeScript (API)
+          ▼
+AIService → AIProvider
+             ├─ OpenRouterProvider
+             └─ NvidiaNimProvider
+```
+
+La app nunca contiene claves de OpenRouter ni NVIDIA NIM. Solo conoce la URL pública del backend.
+
+## Requisitos para instalar
+
+- Node.js 22 o posterior y npm.
+- Flutter estable, Android Studio y Android SDK para compilar Android.
+- Una clave de OpenRouter o NVIDIA NIM.
+- PostgreSQL cuando se habilite persistencia; el MVP actual funciona con repositorios locales/mock.
+
+## Configuración del backend
 
 ```powershell
 cd backend
 npm.cmd ci
 Copy-Item .env.example .env
-# Editar .env y completar clave y modelo antes de usar el chat.
-npm.cmd run dev
 ```
 
-Variables:
+Edita `backend/.env` (este archivo está excluido de Git):
 
-| Variable | Valor |
-|---|---|
-| `AI_PROVIDER` | `openrouter` (inicial) o `nvidia` |
-| `AI_MODEL` | Identificador de un modelo disponible en el proveedor seleccionado |
-| `OPENROUTER_API_KEY` | Tu clave de OpenRouter |
-| `NVIDIA_NIM_API_KEY` | Solo necesaria al seleccionar NVIDIA |
-| `PORT` | `3000` |
-| `AI_TIMEOUT_MS` | `20000` (máximo `60000`) |
-| `RATE_LIMIT_MAX` | `30` solicitudes por IP por minuto |
+```env
+PORT=3000
+AI_PROVIDER=nvidia
+AI_MODEL=deepseek-ai/deepseek-v4-pro-0813
+NVIDIA_NIM_API_KEY=tu_clave_nvidia
+OPENROUTER_API_KEY=
+AI_TIMEOUT_MS=20000
+RATE_LIMIT_MAX=30
+```
 
-No hay modelo predeterminado. Sin clave o modelo, el servidor arranca pero el chat responde `503 AI_NOT_CONFIGURED`. `.env` se excluye de Git. No copies credenciales al cliente Flutter.
+Para usar OpenRouter cambia `AI_PROVIDER=openrouter`, rellena `OPENROUTER_API_KEY` y usa el identificador del modelo elegido en `AI_MODEL`. Nunca pegues claves en Flutter, commits, capturas ni tickets.
+
+Arranque de desarrollo y verificación:
 
 ```powershell
+npm.cmd run dev
+# En otra terminal:
 npm.cmd run build
 npm.cmd test
 npm.cmd run test:smoke
-npm.cmd start
 ```
 
-`GET /health` devuelve `{"status":"ok"}`; comprueba el proceso, no la disponibilidad del proveedor.
+La API queda en `http://localhost:3000`. Comprueba `http://localhost:3000/health` o prueba el chat:
 
 ```powershell
-Invoke-RestMethod http://localhost:3000/api/chat -Method Post -ContentType 'application/json' -Body '{"message":"Hola CORA","userId":"demo","context":{}}'
+Invoke-RestMethod http://localhost:3000/api/chat -Method Post -ContentType 'application/json' -Body '{"message":"Quiero comer pupusas","userId":"demo","context":{}}'
 ```
 
-Respuesta: `{"reply":"..."}`. `message`: 1–4000 caracteres. `userId`: 1–128 caracteres alfanuméricos, guion o guion bajo. `context`: hasta 20 valores planos string/number/boolean; no enviar datos sensibles. Errores: `{ "error": { "code": "...", "message": "..." } }` con estado 400/413/429/502/503/504/500. Límite JSON: 16 KB.
-
-El límite usa memoria local y no presupone un proxy confiable. Esta fase es para desarrollo: antes de exponerla públicamente se necesitará autenticación y configurar el despliegue/proxy y límites compartidos según corresponda.
-
-## Flutter
-
-### APK de prueba por USB
-
-Con Android SDK 36, Build-Tools 36.0.0 y NDK 28.2.13676358 instalados, ejecuta desde la raíz:
+## Configuración de la app móvil
 
 ```powershell
-.\scripts\build-apk-usb.ps1
-```
-
-Este comando genera `mobile/build/app/outputs/flutter-apk/app-debug.apk` con la URL local correcta. En un teléfono con depuración USB autorizada, mantén el backend encendido y ejecuta:
-
-```powershell
-& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" reverse tcp:3000 tcp:3000
-& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r ".\mobile\build\app\outputs\flutter-apk\app-debug.apk"
-```
-
-El USB conecta la app con el backend del equipo; para usarla fuera de esa conexión hace falta un backend HTTPS alojado. Si sdkmanager 23 falla al instalar el NDK, Android CLI permite instalarlo directamente con `android sdk install ndk/28.2.13676358`, indicando la ruta del SDK con `--sdk`. También puede instalarse esa versión desde SDK Manager → SDK Tools → Show Package Details → NDK (Side by side).
-
-Para ver CORA en el navegador, inicia el backend y abre otra terminal:
-
-```powershell
-cd "C:\Users\Administrator\Desktop\cora ia\mobile"
-..\scripts\flutter.ps1 run -d web-server --web-hostname=localhost --web-port=8080 --dart-define=API_BASE_URL=http://localhost:3000
-```
-
-Abre http://localhost:8080. El backend admite ese origen local. El script usa la herramienta oficial directamente y omite la comprobación de actualizaciones que demoraba el inicializador Windows. Con otro SDK puedes sustituir el script por `flutter`.
-
-El SDK local se guarda en `.tools/flutter` y no forma parte del código de la app. También puedes usar un SDK propio en el PATH. Android requiere Android SDK, Java y un emulador o dispositivo, según `flutter doctor`.
-
-El script prepara las dependencias de las herramientas en `.tools/pub-cache` para evitar depender de la caché de otra terminal. Si aparecen errores de dependencias dentro de `flutter_tools`, ejecuta desde la raíz `./scripts/flutter.ps1 --repair-tool doctor -v`. Esto restaura las dependencias de la herramienta; no borra el proyecto ni el perfil del viajero.
-
-Desde la raíz:
-
-```powershell
-.\scripts\flutter.ps1 doctor
 cd mobile
 ..\scripts\flutter.ps1 pub get
-..\scripts\flutter.ps1 analyze
-..\scripts\flutter.ps1 test
 ..\scripts\flutter.ps1 run --dart-define=API_BASE_URL=http://10.0.2.2:3000
 ```
 
-`10.0.2.2` conecta el emulador Android con el host. En un teléfono físico usa la IP LAN del equipo, con ambos dispositivos en la misma red. HTTP se habilita solo para desarrollo Android; para release usa un backend HTTPS. El cliente solo conoce la URL del backend.
+`10.0.2.2` apunta al equipo host desde un emulador Android. En un teléfono físico usa la IP local del equipo y mantén ambos dispositivos en la misma red. Para compilar un APK:
 
-Referencias de integración: [OpenRouter](https://openrouter.ai/docs/quickstart), [NVIDIA NIM](https://docs.api.nvidia.com/nim/re/reference/llm-apis), [configuración Android/Flutter](https://docs.flutter.dev/platform-integration/android/setup).
+```powershell
+..\scripts\flutter.ps1 build apk --release --dart-define=API_BASE_URL=https://api.tudominio.com
+```
+
+El APK se genera en `mobile/build/app/outputs/flutter-apk/app-release.apk`.
+
+## Despliegue real
+
+### Backend
+
+En un servidor Linux, VPS o plataforma como Render, Railway o Fly.io:
+
+```bash
+cd backend
+npm ci
+npm run build
+npm start
+```
+
+Configura las variables de entorno del panel de la plataforma, expón el puerto asignado por `PORT` y apunta un dominio HTTPS mediante el proxy de la plataforma (o Nginx + Let's Encrypt). No subas `.env` al servidor mediante Git; usa los secretos administrados por la plataforma.
+
+Antes de abrir la API a internet, configura autenticación, un rate limit compartido, logs sin mensajes personales y PostgreSQL para perfiles persistentes. El endpoint `/health` sirve para el health check del proveedor.
+
+### Android
+
+Para una versión firmada crea un keystore de producción, configura `key.properties` fuera de Git y añade la firma release en `mobile/android/app/build.gradle.kts`. Después:
+
+```powershell
+cd mobile
+..\scripts\flutter.ps1 build appbundle --release --dart-define=API_BASE_URL=https://api.tudominio.com
+```
+
+El archivo `app-release.aab` se sube a Google Play Console. Para distribución directa puedes generar un APK firmado; el `debug.apk` es solo para desarrollo. iOS requiere macOS y certificados de Apple.
+
+## Estructura del repositorio
+
+```text
+backend/    API Express, servicios de IA, validación y pruebas
+mobile/     Aplicación Flutter Material 3
+scripts/    Atajos reproducibles para Flutter y APK
+```
+
+## Variables de entorno
+
+| Variable | Uso |
+|---|---|
+| `AI_PROVIDER` | `openrouter` o `nvidia` |
+| `AI_MODEL` | Modelo elegido en el proveedor |
+| `OPENROUTER_API_KEY` | Clave privada de OpenRouter |
+| `NVIDIA_NIM_API_KEY` | Clave privada de NVIDIA NIM |
+| `PORT` | Puerto HTTP del backend |
+| `AI_TIMEOUT_MS` | Timeout de llamadas de IA |
+| `RATE_LIMIT_MAX` | Solicitudes por IP y minuto |
+
+## Propiedad y contacto
+
+© 2026 **g95410464-svg · CORA**. Proyecto privado de hackathon y producto en desarrollo. Para colaboraciones o licencias, contacta al propietario del repositorio: [github.com/g95410464-svg](https://github.com/g95410464-svg).
+
+Las marcas Flutter, Node.js, OpenRouter, NVIDIA y las demás referencias pertenecen a sus respectivos propietarios.
+
