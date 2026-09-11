@@ -83,30 +83,38 @@ class _ProfileGateState extends State<ProfileGate> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    if (_error != null) {
-      return Scaffold(
-          body: Center(
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(_error!),
-        TextButton(onPressed: _load, child: const Text('Reintentar'))
-      ])));
-    }
-    if (FirebaseAuth.instance.currentUser == null) {
-      return AuthScreen(onAuthenticated: _load);
-    }
-    if (_profile == null) return OnboardingScreen(onComplete: _save);
-    return TravelHome(
-        profile: _profile!,
-        onSave: _save,
-        onReset: () async {
-          await _repository.clear();
-          if (mounted) setState(() => _profile = null);
-        });
-  }
+  Widget build(BuildContext context) => StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        initialData: FirebaseAuth.instance.currentUser,
+        builder: (context, authSnapshot) {
+          if (authSnapshot.connectionState == ConnectionState.waiting &&
+              authSnapshot.data == null) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          if (authSnapshot.data == null) return const AuthScreen();
+          if (_loading) {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+          if (_error != null) {
+            return Scaffold(
+                body: Center(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Text(_error!),
+              TextButton(onPressed: _load, child: const Text('Reintentar'))
+            ])));
+          }
+          if (_profile == null) return OnboardingScreen(onComplete: _save);
+          return TravelHome(
+              profile: _profile!,
+              onSave: _save,
+              onReset: () async {
+                await _repository.clear();
+                if (mounted) setState(() => _profile = null);
+              });
+        },
+      );
 }
 
 class TravelHome extends StatefulWidget {

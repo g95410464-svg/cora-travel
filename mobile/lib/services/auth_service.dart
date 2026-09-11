@@ -6,10 +6,14 @@ class AuthService {
   final GoogleSignIn _google = GoogleSignIn();
 
   User? get currentUser => _auth.currentUser;
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<UserCredential> signInWithGoogle() async {
     final account = await _google.signIn();
-    if (account == null) throw FirebaseAuthException(code: 'cancelled');
+    if (account == null) {
+      throw FirebaseAuthException(code: 'cancelled');
+    }
+
     final tokens = await account.authentication;
     final credential = GoogleAuthProvider.credential(
       accessToken: tokens.accessToken,
@@ -22,10 +26,18 @@ class AuthService {
     required String phone,
     required void Function(String verificationId) onCodeSent,
     required void Function(FirebaseAuthException error) onError,
-  }) {
-    return _auth.verifyPhoneNumber(
+  }) async {
+    await _auth.verifyPhoneNumber(
       phoneNumber: phone,
-      verificationCompleted: (credential) => _auth.signInWithCredential(credential),
+      verificationCompleted: (credential) async {
+        try {
+          await _auth.signInWithCredential(credential);
+        } on FirebaseAuthException catch (e) {
+          onError(e);
+        } catch (_) {
+          onError(FirebaseAuthException(code: 'automatic-verification-failed'));
+        }
+      },
       verificationFailed: onError,
       codeSent: (id, _) => onCodeSent(id),
       codeAutoRetrievalTimeout: onCodeSent,
@@ -34,7 +46,10 @@ class AuthService {
 
   Future<UserCredential> verifyCode(String verificationId, String code) {
     return _auth.signInWithCredential(
-      PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code),
+      PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: code,
+      ),
     );
   }
 
