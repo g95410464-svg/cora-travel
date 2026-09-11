@@ -53,7 +53,7 @@ jobs:
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build release APK
-        run: flutter build apk --release --build-number=${{ github.run_number }}
+        run: flutter build apk --release --build-number=1000${{ github.run_number }}
 
       - name: Prepare APK
         run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/CORA-Travel.apk
